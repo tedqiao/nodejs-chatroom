@@ -1,0 +1,55 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="/javascripts/myjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="http://localhost:8000/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    $('form').submit(function(){
+        $('#chat').append(addText({user:'you',msg:$('#msg').val()}));
+        $("#chat").animate({ scrollTop:
+                document.getElementById("chat").scrollHeight
+        }, 300);
+        socket.emit('chat message', $('#msg').val());
+        $('#msg').val('');
+        return false;
+    });
+
+    socket.on('chat entry',function(msg){
+        $('#chat').append($('<span>').text(msg));
+
+    })
+    socket.on('chat message',function(data){
+        $('#chat').append(addText(data));
+        $("#chat").animate({ scrollTop:
+                            document.getElementById("chat").scrollHeight
+                            }, 300);
+    })
+
+    function addText(data){
+        var msg='<div class="row">'+
+        '<div class="col-lg-12">'+
+                '<p class="text-center text-muted small">January 1, 2014 at 12:23 PM</p>'+
+        '</div>'+
+        '</div>'+
+        '<div class="row">'+
+                '<div class="col-lg-12">'+
+                '<div class="media">'+
+                '<a class="pull-left" href="#">'+
+                '<img class="media-object img-circle" src="http://lorempixel.com/30/30/people/1/" alt="">'+
+                '</a>'+
+                '<div class="media-body">'+
+                '<h4 class="media-heading">'+data.user+
+        '<span class="small pull-right">12:23 PM</span>'+
+        '</h4>'+
+        '<p>'+data.msg+'</p>'+
+        '</div>'+
+        '</div>'+
+        '</div>'+
+        '</div>'+
+        '<hr>';
+        return msg;
+    }
+</script>
