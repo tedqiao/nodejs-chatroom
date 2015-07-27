@@ -22,7 +22,7 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
     console.log(msg);
-    socket.broadcast.emit('chat message', {user:'someone',msg:msg});
+    socket.broadcast.emit('chat message', msg);
   })
 
   socket.on('disconnect', function(){

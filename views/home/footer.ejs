@@ -8,11 +8,16 @@
 <script>
     var socket = io();
     $('form').submit(function(){
+        if($('#nickname').val()==""){
+            alert('YOu need a nick name');
+            $('#nickname').focus();
+            return false;
+        }
         $('#chat').append(addText({user:'you',msg:$('#msg').val()}));
         $("#chat").animate({ scrollTop:
                 document.getElementById("chat").scrollHeight
         }, 300);
-        socket.emit('chat message', $('#msg').val());
+        socket.emit('chat message', {user:$('#nickname').val(),msg:$('#msg').val()});
         $('#msg').val('');
         return false;
     });
@@ -31,7 +36,7 @@
     function addText(data){
         var msg='<div class="row">'+
         '<div class="col-lg-12">'+
-                '<p class="text-center text-muted small">January 1, 2014 at 12:23 PM</p>'+
+                '<p class="text-center text-muted small">'+getDate()+'</p>'+
         '</div>'+
         '</div>'+
         '<div class="row">'+
@@ -51,5 +56,9 @@
         '</div>'+
         '<hr>';
         return msg;
+    }
+
+    function getDate(){
+        return "";
     }
 </script>
