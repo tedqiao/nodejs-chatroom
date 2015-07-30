@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var nowjs = require("now");
+var session = require('express-session');
 require('dotenv').load();
-
+var passport = require('passport');
+require('./config/passport')(passport);
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -41,9 +42,32 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({secret: '123456789qwes'}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+
+app.use(function (req, res, next) {
+  if(!req.session.user){
+    next();
+  }
+});
+
+app.get('/auth/fb',
+    passport.authenticate('facebook',{ scope: ['user_status'] }),
+    function(req, res){
+      // The request will be redirected to Facebook for authentication, so this
+      // function will not be called.
+    });
+
+app.get('/auth/fb/callback',
+    passport.authenticate('facebook', { failureRedirect: '/' }),
+    function(req, res) {
+      res.redirect('/me');
+    });
+
+app.use('/',routes);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
